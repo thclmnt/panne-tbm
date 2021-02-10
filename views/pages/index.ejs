@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+    <title>PANNE TBM</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/K9s7HAm.png"/>
+    <style>
+        *,
+        html {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+        html {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: white;
+        }
+        .center {
+            width: 100%;
+            height: 50%;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #039CD2; 
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            color: #97BF0D;
+            font-size: 120px;
+        }
+        h2 {
+            color: #E2007A;
+            text-shadow: 2px 2px 2px black;;
+            font-size: 100px;
+        }
+        p {
+            font-size: 64px;
+        }
+        .gitlogo {
+            margin-bottom: 1px;
+            margin-left : 1px;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+    <br><br>
+    <img id="rotate" src="https://i.imgur.com/9qEAx4f.png" height="200" width="200"></img>
+    </center>
+    <div class="center">
+        <h1>
+            PANNE DE TRAM TBM
+        </h1>
+        <br>
+        <p>Nombre d'interruptions aujourd'hui:</p>
+        <br>
+        <h2><%=day%></h2>       
+        <p>Nombre d'interruptions cette année:</p>
+        <br>
+        <h2><%=year%></h2>         
+    </div>
+    <div class="gitlogo">
+        <a href="https://github.com/thclmnt/panne-tbm/">
+            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="100" height="100">
+        </a>
+    </div>
+    
+
+</body>
+<script>
+    let rotate = [
+      { transform: 'rotate(360deg)' }
+    ];
+    let infinite = {
+      duration: 2000,
+      iterations: Infinity
+    }
+    document.getElementById("rotate").animate(
+        rotate,infinite
+    );
+</script>
+</html>
