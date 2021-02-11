@@ -15,7 +15,7 @@ L'application est retrouvable en ligne ici: [http://www.panne-tbm.info/](http://
 Pour lancer l'application en local
 
 ```bash
-git clone https://github.com/thclmnt/panne-tbm/
+git clone https://github.com/thclmnt/panne-tbm.git
 cd panne-tbm
 npm install
 npm start
