@@ -5,7 +5,31 @@ const fs = require('fs');
 const schedule = require('node-schedule');
 require('dotenv').config();
 
-const port = 80
+const redis = require("redis");
+const DB = redis.createClient();
+
+const { promisify } = require("util");
+const getAsync = promisify(DB.get).bind(DB);
+
+DB.on("error", function(error) {
+  console.error(error);
+});
+
+function CHANGE_DATA(day,year) {
+  DB.set("day",day);
+  DB.set("year",year);
+}
+
+function UPDATE_ONE_DATA() {
+  DB.incr("day");
+  DB.incr("year");
+}
+
+function UPDATE_MIDNIGHT_DATA() {
+  DB.set("day",0);
+}
+
+const port = process.env.PORT || 80
 app.set('view engine', 'ejs');
 
 // create a schedule routing at midnight
@@ -40,50 +64,34 @@ let is_TBM = id => {
     || id==ID_TBM_TramD
 };
 
-const DATA_FILE = 'data.json';
-
-const GET_DATA = () => {
-  let data = fs.readFileSync(DATA_FILE);
-  return JSON.parse(data);
-}
-
-const SET_DATA = (obj) => {
-  fs.writeFileSync(DATA_FILE,JSON.stringify(obj));
-}
-
-const UPDATE_DATA = () => {
-  let data = GET_DATA();
-  data.DAY=data.DAY +1
-  data.YEAR=data.YEAR +1
-  SET_DATA(data);
-}
-
-// reseting day variable every day
 const job = schedule.scheduleJob(rule, function(){
-  let data = GET_DATA();
-  data.DAY=0;
-  SET_DATA(data);
+  UPDATE_MIDNIGHT_DATA();
 });
 
 
-app.get('/', function(req, res) {
-  let data = GET_DATA();
-  res.render('pages/index',
-  {
-    day: data.DAY,
-    year: data.YEAR,
-  });
-});
+function RENDER_RESULT(req, res,next){
+  DB.mget(["day","year"],(err,data) => {
+    if (err) throw err;
+    if (data!==null){
+      res.render('pages/index',{
+        day: data[0],
+        year: data[1],
+      });
+    }
+  })
+}
 
-app.listen(process.env.PORT || port, () => {
-  console.log(`Server is running on port: ${port}`)
+app.get('/', RENDER_RESULT);
+
+app.listen(port, () => {
+  console.log(`Server is running on port: http://localhost:${port}`)
 })
 
 // tracking new TBM tweet
 client.stream('statuses/filter', {track: SEARCH_TRAM},  function(stream) {
   stream.on('data', function(tweet) {
     if(is_TBM(tweet.user.id)){
-      UPDATE_DATA();
+      UPDATE_ONE_DATA()
     }
     console.log("+1!")
   });
