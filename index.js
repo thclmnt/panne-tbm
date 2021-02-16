@@ -6,7 +6,7 @@ const schedule = require('node-schedule');
 require('dotenv').config();
 
 const redis = require("redis");
-const DB = redis.createClient();
+const DB = redis.createClient(process.env.REDIS_URL);
 
 const { promisify } = require("util");
 const getAsync = promisify(DB.get).bind(DB);
