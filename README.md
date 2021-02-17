@@ -6,6 +6,10 @@ Passe-TBM est une application web Node.js permettant de traquer le nombre de pan
 
 Cette application n'est pas à but sérieuse! Il s'agit juste d'une petite blague de l'auteur pour aborder les problèmes fréquents du réseau de tram TBM.
 
+## Presse
+
+> [Sudouest: Bordeaux - Il recense les problèmes de tram dans la metropole sur une page web](https://www.sudouest.fr/gironde/pessac/bordeaux-il-recense-les-problemes-de-tram-dans-la-metropole-sur-une-page-web-1350972.php)
+
 ## À FAIRE
 
 * Traquer chaque Tram individuellement
