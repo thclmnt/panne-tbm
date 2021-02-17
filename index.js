@@ -29,7 +29,7 @@ function UPDATE_MIDNIGHT_DATA() {
   DB.set("day",0);
 }
 
-const port = process.env.PORT || 80
+const port = process.env.PORT || 3000
 app.set('view engine', 'ejs');
 
 // create a schedule routing at midnight
