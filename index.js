@@ -50,11 +50,23 @@ function RENDER_RESULT(req, res,next){
         day: data[0],
         year: data[1],
       });
+    } else {
+      next();
     }
   })
 }
 
-app.get('/', RENDER_RESULT);
+function RENDER_TWEET(req, res, next) {
+  res.render('pages/tweets');
+}
+
+function ERROR(req, res, next){
+  res.status(500).send("Erreur serveur!")
+}
+
+app.get('/', RENDER_RESULT, ERROR);
+
+app.get('/tweets', RENDER_TWEET, ERROR);
 
 app.listen(port, () => {
   console.log(`Server is running on port: http://localhost:${port}`)
