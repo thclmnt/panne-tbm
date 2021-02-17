@@ -2,23 +2,25 @@
 
 Passe-TBM est une application web Node.js permettant de traquer le nombre de panne du service de Tram TBM (Bordeaux)
 
-### Avertissement
+## Avertissement
 
 Cette application n'est pas à but sérieuse! Il s'agit juste d'une petite blague de l'auteur pour aborder les problèmes fréquents du réseau de tram TBM.
 
-### À FAIRE
+## À FAIRE
 
 * Traquer chaque Tram individuellement
 * Page statistique
 * Améliorer le design du site
 * Disposer d'une API public (GraphQL ?)
 
-### Installation
+## Installation
 
-###### Logiciel nécessaire:
+### Logiciel nécessaire
 
 > [Node.js](https://nodejs.org/)
 > [Redis](https://redis.io/)
+
+### Commandes
 
 Pour démarrer la base de donnée Redis en local
 
@@ -37,4 +39,5 @@ npm start
 ```
 
 ## License
+
 [MIT](LICENSE)
