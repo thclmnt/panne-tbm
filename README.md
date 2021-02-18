@@ -46,14 +46,7 @@ npm start
 
 ## Fonctionnement
 
-```sequence
-Client->Server: Request
-Server->Cache: Accessing to Cache
-Cache-->Database: Fetching information
-Database-->Cache: Updating Cache
-Cache->Server: Delivering Request
-Server->Client: Serving Content
-```
+<img src="./assets/diagram.svg">
 
 ## License
 
