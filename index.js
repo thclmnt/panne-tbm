@@ -1,15 +1,17 @@
 const express = require('express');
 const app = express();
-const Twitter = require('twitter');
+const Twit = require('twit');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const Tram = require('./models/tram');
 const TramId = require('./models/const')
 const cron = require('node-cron');
 require('dotenv').config();
-
 let startOfDay = require('date-fns/startOfDay')
 let endOfDay = require('date-fns/endOfDay')
+
+////////////////////////
+// Database & Cache connection
 
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
     .then((result) => {
@@ -29,18 +31,22 @@ DB.on("error", function(error) {
   console.error(error);
 });
 
+////////////////////////
+// Database function
+
+// default tram report
 function CREATE_TRAM_REPORT(tramName) {
   const tram = new Tram({
       tram: tramName,
   });
-
   tram.save()
       .then((result) =>{
+          console.log("new tram report:")
           console.log(result);
       });
 }
 
-
+// function to update redis cache
 function UPDATE_REDIS_CACHE_DAY() {
   Tram.countDocuments({
       date: {
@@ -62,47 +68,20 @@ function UPDATE_REDIS_CACHE_YEAR() {
   })
 }
 
-const port = process.env.PORT || 3000
-app.set('view engine', 'ejs');
-
+// update redis every two minute
 cron.schedule('*/2 * * * *', () => {
-  console.log('updating cache...');
   UPDATE_REDIS_CACHE_DAY();
   UPDATE_REDIS_CACHE_YEAR();
 });
 
+////////////////////////
+// Express Web App
 
-// logging to twitter API using key in .env file
-let client = new Twitter({
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token_key: process.env.ACCESS_TOKEN_KEY,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-});
+//configuration
+const port = process.env.PORT || 3000
+app.set('view engine', 'ejs');
 
-
-// TBM Tram account ID on twitter
-
-
-// twitter search term
-const SEARCH_TRAM = `"#TBMTram" AND "interrompu" -filter:replies`
-
-// predicate to know if a twitter id is from a TBM account
-let is_TBM = id => {
-  return id==TramId.A
-    || id==TramId.B
-    || id==TramId.C
-    || id==TramId.D
-};
-
-let tramGetId = id => {
-  if (id==TramId.A) { return 'A' };
-  if (id==TramId.B) { return 'B' };
-  if (id==TramId.C) { return 'C' };
-  if (id==TramId.D) { return 'D' };
-}
-
-
+// render main page with data from cache
 function RENDER_RESULT(req, res,next){
   DB.mget(["day","year"],(err,data) => {
     if (err) throw err;
@@ -111,19 +90,23 @@ function RENDER_RESULT(req, res,next){
         day: data[0],
         year: data[1],
       });
+    } else {
+      next();
     }
   })
 }
 
-
+// render tweet page
 function RENDER_TWEET(req, res, next) {
   res.render('pages/tweets');
 }
 
+// render error
 function ERROR(req, res, next){
   res.status(500).send("Erreur serveur!")
 }
 
+// routing
 app.get('/', RENDER_RESULT, ERROR);
 
 app.get('/tweets', RENDER_TWEET, ERROR);
@@ -132,16 +115,37 @@ app.listen(port, () => {
   console.log(`Server is running on port: http://localhost:${port}`)
 })
 
-// tracking new TBM tweet
-client.stream('statuses/filter', {track: SEARCH_TRAM},  function(stream) {
-  stream.on('data', function(tweet) {
-    if(is_TBM(tweet.user.id)){
-      let tramId = tramGetId(id);
-      CREATE_TRAM_REPORT(tramId)
-    }
-  });
+////////////////////////
+// Twitter Stream
 
-  stream.on('error', function(error) {
-    console.log(error);
-  });
+// returning tram from twitter id
+function tramIdSolver(id) {
+  if (id==TramId.A) { return 'A' };
+  if (id==TramId.B) { return 'B' };
+  if (id==TramId.C) { return 'C' };
+  if (id==TramId.D) { return 'D' };
+  return -1;
+}
+
+// search term on twitter
+const SEARCH_TRAM = `"#TBMTram" AND "interrompu" -filter:replies`;
+
+// logging to twitter API using key in .env file
+let client = new Twit({
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+});
+
+// stream API connection
+let stream = client.stream('statuses/filter', { track: SEARCH_TRAM });
+
+// create new tram report on tweet
+stream.on('tweet', function (tweet) {
+  let idTweet = tweet.user.id
+  let idTram = tramIdSolver(idTweet);
+  if (idTram != -1){
+      CREATE_TRAM_REPORT(idTram);
+  }
 });

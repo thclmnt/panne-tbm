@@ -17,7 +17,7 @@
     "mongoose": "^5.11.15",
     "node-cron": "^2.0.3",
     "redis": "^3.0.2",
-    "twitter": "^1.7.1"
+    "twit": "^2.2.11"
   },
   "engines": {
     "node": "14.x"
