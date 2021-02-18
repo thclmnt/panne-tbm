@@ -1,6 +1,8 @@
 # Panne TBM
 
-Passe-TBM est une application web Node.js permettant de traquer le nombre de panne du service de Tram TBM (Bordeaux)
+Panne-TBM est une application web Node.js permettant de traquer le nombre de panne du service de Tram TBM (Bordeaux)
+
+L'application est trouvable ici: [panne-tbm.info](http://panne-tbm.info/)
 
 ## Avertissement
 
@@ -40,6 +42,17 @@ git clone https://github.com/thclmnt/panne-tbm.git
 cd panne-tbm
 npm install
 npm start
+```
+
+## Fonctionnement
+
+```sequence
+Client->Server: Request
+Server->Cache: Accessing to Cache
+Cache-->Database: Fetching information
+Database-->Cache: Updating Cache
+Cache->Server: Delivering Request
+Server->Client: Serving Content
 ```
 
 ## License

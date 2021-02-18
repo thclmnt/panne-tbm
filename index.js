@@ -2,8 +2,22 @@ const express = require('express');
 const app = express();
 const Twitter = require('twitter');
 const fs = require('fs');
-const schedule = require('node-schedule');
+const mongoose = require('mongoose');
+const Tram = require('./models/tram');
+const TramId = require('./models/const')
+const cron = require('node-cron');
 require('dotenv').config();
+
+let startOfDay = require('date-fns/startOfDay')
+let endOfDay = require('date-fns/endOfDay')
+
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then((result) => {
+      console.log("connected to db")
+      UPDATE_REDIS_CACHE_YEAR();
+      UPDATE_REDIS_CACHE_DAY();
+    })
+    .catch((err) => console.log(err));
 
 const redis = require("redis");
 const DB = redis.createClient(process.env.REDIS_URL);
@@ -15,28 +29,48 @@ DB.on("error", function(error) {
   console.error(error);
 });
 
-function CHANGE_DATA(day,year) {
-  DB.set("day",day);
-  DB.set("year",year);
+function CREATE_TRAM_REPORT(tramName) {
+  const tram = new Tram({
+      tram: tramName,
+  });
+
+  tram.save()
+      .then((result) =>{
+          console.log(result);
+      });
 }
 
-function UPDATE_ONE_DATA() {
-  DB.incr("day");
-  DB.incr("year");
+
+function UPDATE_REDIS_CACHE_DAY() {
+  Tram.countDocuments({
+      date: {
+          $gte: startOfDay(new Date()),
+          $lte: endOfDay(new Date())
+      }
+  }).then((result) => {
+      DB.set("day",result);
+  })
 }
 
-function UPDATE_MIDNIGHT_DATA() {
-  DB.set("day",0);
+function UPDATE_REDIS_CACHE_YEAR() {
+  Tram.countDocuments({
+      date: {
+          $gt: new Date('2021-01-01'),
+      }
+  }).then((result) => {
+      DB.set("year",result);
+  })
 }
 
 const port = process.env.PORT || 3000
 app.set('view engine', 'ejs');
 
-// create a schedule routing at midnight
-const rule = new schedule.RecurrenceRule();
-rule.hour = 0;
-rule.minute = 0;
-rule.tz= 'Europe/Paris'
+cron.schedule('*/2 * * * *', () => {
+  console.log('updating cache...');
+  UPDATE_REDIS_CACHE_DAY();
+  UPDATE_REDIS_CACHE_YEAR();
+});
+
 
 // logging to twitter API using key in .env file
 let client = new Twitter({
@@ -48,25 +82,25 @@ let client = new Twitter({
 
 
 // TBM Tram account ID on twitter
-const ID_TBM_TramA = 822960991;
-const ID_TBM_TramB = 822958014;
-const ID_TBM_TramC = 822984878;
-const ID_TBM_TramD = 2938368987;
+
 
 // twitter search term
 const SEARCH_TRAM = `"#TBMTram" AND "interrompu" -filter:replies`
 
 // predicate to know if a twitter id is from a TBM account
 let is_TBM = id => {
-  return id==ID_TBM_TramA
-    || id==ID_TBM_TramB
-    || id==ID_TBM_TramC
-    || id==ID_TBM_TramD
+  return id==TramId.A
+    || id==TramId.B
+    || id==TramId.C
+    || id==TramId.D
 };
 
-const job = schedule.scheduleJob(rule, function(){
-  UPDATE_MIDNIGHT_DATA();
-});
+let tramGetId = id => {
+  if (id==TramId.A) { return 'A' };
+  if (id==TramId.B) { return 'B' };
+  if (id==TramId.C) { return 'C' };
+  if (id==TramId.D) { return 'D' };
+}
 
 
 function RENDER_RESULT(req, res,next){
@@ -80,6 +114,7 @@ function RENDER_RESULT(req, res,next){
     }
   })
 }
+
 
 function RENDER_TWEET(req, res, next) {
   res.render('pages/tweets');
@@ -101,9 +136,9 @@ app.listen(port, () => {
 client.stream('statuses/filter', {track: SEARCH_TRAM},  function(stream) {
   stream.on('data', function(tweet) {
     if(is_TBM(tweet.user.id)){
-      UPDATE_ONE_DATA()
+      let tramId = tramGetId(id);
+      CREATE_TRAM_REPORT(tramId)
     }
-    console.log("+1!")
   });
 
   stream.on('error', function(error) {
