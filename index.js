@@ -1,10 +1,8 @@
 const express = require('express');
 const app = express();
-const Twit = require('twit');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const Tram = require('./models/tram');
-const TramId = require('./models/const')
 const cron = require('node-cron');
 require('dotenv').config();
 let startOfDay = require('date-fns/startOfDay')
@@ -114,38 +112,3 @@ app.get('/tweets', RENDER_TWEET, ERROR);
 app.listen(port, () => {
   console.log(`Server is running on port: http://localhost:${port}`)
 })
-
-////////////////////////
-// Twitter Stream
-
-// returning tram from twitter id
-function tramIdSolver(id) {
-  if (id==TramId.A) { return 'A' };
-  if (id==TramId.B) { return 'B' };
-  if (id==TramId.C) { return 'C' };
-  if (id==TramId.D) { return 'D' };
-  return -1;
-}
-
-// search term on twitter
-const SEARCH_TRAM = `"#TBMTram" AND "interrompu" -filter:replies`;
-
-// logging to twitter API using key in .env file
-let client = new Twit({
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN_KEY,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-});
-
-// stream API connection
-let stream = client.stream('statuses/filter', { track: SEARCH_TRAM });
-
-// create new tram report on tweet
-stream.on('tweet', function (tweet) {
-  let idTweet = tweet.user.id
-  let idTram = tramIdSolver(idTweet);
-  if (idTram != -1){
-      CREATE_TRAM_REPORT(idTram);
-  }
-});
