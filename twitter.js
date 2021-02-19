@@ -35,7 +35,7 @@ function tramIdSolver(id) {
 }
 
 // search term on twitter
-const SEARCH_TRAM = `"#TBMTram" AND ("interrompu" OR "interruptions") -filter:replies`;  
+const SEARCH_TRAM = `"#TBMTram" AND ("interrompu" OR "interruptions")`;  
 // logging to twitter API using key in .env file
 let client = new Twit({
     consumer_key: process.env.CONSUMER_KEY,
