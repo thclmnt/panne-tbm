@@ -15,9 +15,9 @@
     "ejs": "^3.1.6",
     "express": "4.17.1",
     "mongoose": "^5.11.15",
+    "needle": "^2.6.0",
     "node-cron": "^2.0.3",
-    "redis": "^3.0.2",
-    "twit": "^2.2.11"
+    "redis": "^3.0.2"
   },
   "engines": {
     "node": "14.x"
