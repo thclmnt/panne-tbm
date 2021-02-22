@@ -4,26 +4,26 @@ const Tram = require('./models/tram');
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then((result) => {
-        console.log("connected to db")
-    })
-    .catch((err) => console.log(err));
-
 const token = process.env.BEARER_TOKEN;
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
 const streamURL = 'https://api.twitter.com/2/tweets/search/stream';
 
 
 function CREATE_TRAM_REPORT(tramName) {
-    const tram = new Tram({
+    mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then((result) => {
+        console.log("connected to db")
+        const tram = new Tram({
         tram: tramName,
         });
-    tram.save()
-        .then((result) =>{
-            console.log("new tram report:")
-            console.log(result);
-    });
+        tram.save()
+            .then((result) =>{
+                console.log("new tram report:")
+                console.log(result);
+                mongoose.connection.close()
+        });
+    })
+    .catch((err) => console.log(err));
 }
 
 ////////////////////////
@@ -112,6 +112,7 @@ function streamConnect() {
         try {
             const json = JSON.parse(data);
             let tram = json['matching_rules'][0].tag;
+            console.log("NEW TRAM INTERRUPTION: ",tram);
             CREATE_TRAM_REPORT(tram);
         } catch (e) {
         }
