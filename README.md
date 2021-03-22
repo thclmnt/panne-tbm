@@ -4,6 +4,8 @@ Panne-TBM est une application web Node.js permettant de traquer le nombre de pan
 
 L'application est trouvable ici: [panne-tbm.info](http://panne-tbm.info/)
 
+(Le site n'était pas dispo depuis les incendies d'OVH, le compte du nombre de panne n'est pas très à jour)
+
 ## Avertissement
 
 Cette application n'est pas à but sérieuse! Il s'agit juste d'une petite blague de l'auteur pour aborder les problèmes fréquents du réseau de tram TBM.
