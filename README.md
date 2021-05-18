@@ -1,10 +1,6 @@
-# Panne TBM
+# Panne TBM (deprecated)
 
 Panne-TBM est une application web Node.js permettant de traquer le nombre de panne du service de Tram TBM (Bordeaux)
-
-L'application est trouvable ici: [panne-tbm.info](http://panne-tbm.info/)
-
-(Le site n'était pas dispo depuis les incendies d'OVH, le compte du nombre de panne n'est pas très à jour)
 
 ## Avertissement
 
