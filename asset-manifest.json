@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/panne-tbm/static/css/main.a617e044.chunk.css",
+    "main.js": "/panne-tbm/static/js/main.edceeb28.chunk.js",
+    "main.js.map": "/panne-tbm/static/js/main.edceeb28.chunk.js.map",
+    "runtime-main.js": "/panne-tbm/static/js/runtime-main.1d198048.js",
+    "runtime-main.js.map": "/panne-tbm/static/js/runtime-main.1d198048.js.map",
+    "static/js/2.39dc9b6f.chunk.js": "/panne-tbm/static/js/2.39dc9b6f.chunk.js",
+    "static/js/2.39dc9b6f.chunk.js.map": "/panne-tbm/static/js/2.39dc9b6f.chunk.js.map",
+    "static/js/3.ff70a96b.chunk.js": "/panne-tbm/static/js/3.ff70a96b.chunk.js",
+    "static/js/3.ff70a96b.chunk.js.map": "/panne-tbm/static/js/3.ff70a96b.chunk.js.map",
+    "index.html": "/panne-tbm/index.html",
+    "static/css/main.a617e044.chunk.css.map": "/panne-tbm/static/css/main.a617e044.chunk.css.map",
+    "static/js/2.39dc9b6f.chunk.js.LICENSE.txt": "/panne-tbm/static/js/2.39dc9b6f.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/panne-tbm/static/media/logo.6ce24c58.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.1d198048.js",
+    "static/js/2.39dc9b6f.chunk.js",
+    "static/css/main.a617e044.chunk.css",
+    "static/js/main.edceeb28.chunk.js"
+  ]
+}
